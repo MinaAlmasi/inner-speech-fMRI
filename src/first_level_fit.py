@@ -2,6 +2,7 @@
 Script to fit a first level model to all participants
 '''
 import pathlib
+import nibabel as nib
 
 def first_level_fit(bids_path, subject:str, n_runs:int):
     '''
@@ -39,9 +40,37 @@ def first_level_fit(bids_path, subject:str, n_runs:int):
 def get_events(events_paths): 
     events = []
 
-    for event_path in events_paths: 
-        event_df = pd.read_csv(event_path)
+    for path in events_paths: 
+        event_df = pd.read_csv(path, sep="\t")
+
+        # remove all cols except onset, duration, trial type
+        event_df = event_df.loc[:, ["onset", "duration", "trial_type"]]
+        
         events.append(event_df)
+
+    return events 
+
+def get_masks(mask_paths):
+    masks = []
+
+    for path in mask_paths: 
+        mask = nib.load(path)
+        masks.append(mask)
+
+    # merge masks 
+    mask_image = masking.intersect_masks(masks, threshold=0.8)
+
+    return mask_image
+
+def get_confounds(confound_paths):
+    confounds = []
+
+    for path in confound_paths:
+        confounds_df = pd.read_csv(path, sep="\t")
+
+        # select confound cols we are interested in
+        pass
+
 
 def main():
      path = pathlib.Path(__file__)
