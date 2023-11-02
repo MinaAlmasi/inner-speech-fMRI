@@ -80,6 +80,9 @@ def get_confounds(confound_paths):
         # select confound cols we are interested in
         confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
 
+        # replace all nans # NB to whether this is the correct solution. See maybe https://carpentries-incubator.github.io/SDC-BIDS-fMRI/05-data-cleaning-with-nilearn/index.html
+        confounds_df = confounds_df.fillna(0)
+
         confounds.append(confounds_df)
 
     return confounds
