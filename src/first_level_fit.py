@@ -1,12 +1,18 @@
 '''
 Script to fit a first level model to all participants
 '''
-import pathlib
-import nibabel as nib
+# utils & data
+import pathlib, os
+import pandas as pd
 
-def first_level_fit(bids_path, subject:str, n_runs:int):
+# neuroimaging 
+import nibabel as nib
+from nilearn import masking
+from nilearn.glm.first_level import FirstLevelModel
+
+def get_paths(bids_path, subject:str, n_runs:int):
     '''
-    Fit first level model on a particular subject
+    Get all paths to files needed to fit a first level model for a particular subject.
 
     Args
         bids_path: path to bids directory (root)
@@ -14,7 +20,10 @@ def first_level_fit(bids_path, subject:str, n_runs:int):
         n_runs: number of blocks in the experiment
 
     Returns
-        first_level_mdl: first level model
+        fprep_f_paths: path to functional fMRIprep processed data
+        event_paths: path to events (trigger) data
+        confounds_paths: paths to the confound data 
+        mask_paths: paths needed to fit a first level model (functional fmriPREP processed data, events, confounds, masks)
     '''
     # define space ()
     space = "MNI152NLin2009cAsym"
@@ -69,15 +78,51 @@ def get_confounds(confound_paths):
         confounds_df = pd.read_csv(path, sep="\t")
 
         # select confound cols we are interested in
-        pass
+        confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
+
+        confounds.append(confounds_df)
+
+    return confounds
+
+def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths): 
+    # get TR from first functional fmri path (based on https://nipy.org/nibabel/devel/biaps/biap_0006.html)
+    TR = int(nib.load(fprep_f_paths[0]).header["pixdim"][4])
+
+    # get events, confonds and mask img
+    events = get_events(event_paths)
+    confounds = get_confounds(confounds_paths) 
+    mask_image = get_masks(mask_paths)
+
+    # create first lvl model 
+    first_level_mdl = FirstLevelModel(
+        t_r=TR,
+        slice_time_ref=0, # default val, ask Mikkel as notebook 13 has it set to 0.5 
+        hrf_model="glover", 
+        mask_img = mask_image, 
+        noise_model="ols", 
+        verbose=1
+    )
+
+    # fit model 
+    first_level_mdl.fit(fprep_f_paths, events, confounds)
+
+    return first_level_mdl
 
 
 def main():
-     path = pathlib.Path(__file__)
+    os.environ['MKL_NUM_THREADS'] = '1'
+    os.environ['OPENBLAS_NUM_THREADS'] = '1'
+    
+    # define root dir 
+    path = pathlib.Path(__file__)
+    bids_path = path.parents[3] / "816119" / "InSpePosNegData" / "BIDS_2023E"
 
-     bids_path = path.parents[3] / "816119" / "InSpePosNegData" / "BIDS_2023E"
+    # get paths 
+    fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, "0117", 6)
+    print(fprep_f_paths)
 
-     first_level_fit(bids_path, "0116", 6)
+    # get first level mdl for subject 0116
+    first_level_mdl = first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths)
 
 
 if __name__ == "__main__":
