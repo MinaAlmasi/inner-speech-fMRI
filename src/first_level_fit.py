@@ -4,6 +4,7 @@ Script to fit a first level model to all participants
 # utils & data
 import pathlib, os
 import pandas as pd
+import pickle
 
 # neuroimaging 
 import nibabel as nib
@@ -80,7 +81,8 @@ def get_confounds(confound_paths):
         # select confound cols we are interested in
         confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
 
-        # replace all nans # NB to whether this is the correct solution. See maybe https://carpentries-incubator.github.io/SDC-BIDS-fMRI/05-data-cleaning-with-nilearn/index.html
+        # replace all nans # NB to whether this is the correct solution (0s should not do a big impact https://neurostars.org/t/confounds-from-fmriprep-which-one-would-you-use-for-glm/326/18)
+        # for other solution, see maybe https://carpentries-incubator.github.io/SDC-BIDS-fMRI/05-data-cleaning-with-nilearn/index.html
         confounds_df = confounds_df.fillna(0)
 
         confounds.append(confounds_df)
@@ -111,6 +113,19 @@ def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths):
 
     return first_level_mdl
 
+def all_subjects_pipeline(bids_path, subjects_list, save_path=None):
+    for subject in subjects_list: 
+        # get paths
+        fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, subject, n_runs=6)
+        
+        # first level model 
+        first_level_mdl = first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths)
+
+        # save if savepath is 
+        if save_path:
+            file_name = f"flm_{subject}.pkl"
+            pickle.dump(first_level_mdl, open(save_path / file_name, "wb"))
+
 
 def main():
     os.environ['MKL_NUM_THREADS'] = '1'
@@ -120,12 +135,11 @@ def main():
     path = pathlib.Path(__file__)
     bids_path = path.parents[3] / "816119" / "InSpePosNegData" / "BIDS_2023E"
 
-    # get paths 
-    fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, "0117", 6)
-    print(fprep_f_paths)
-
-    # get first level mdl for subject 0116
-    first_level_mdl = first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths)
+    save_path = path.parents[1] / "data" / "flm_models"
+    save_path.mkdir(parents=True, exist_ok=True)
+    
+    subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
+    all_subjects_pipeline(bids_path, subjects, save_path=save_path)
 
 
 if __name__ == "__main__":
