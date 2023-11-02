@@ -1,2 +1,17 @@
-# inner-speech-fmri
-Code was developed by Mina and Anton. Repository for the portfolio 4 in the course "Advanced Cognitive Neuroscience" (E2023).. 
+# Inner Speech fMRI 
+Investigating inner speech using fMRI. Portfolio 4 by Mina and Anton in the course  *Advanced Cognitive Neuroscience* (E2023). 
+
+Below, an overview of the repository is described. For reproducibility, please refer to the *Pipeline* section. Note that the data is highly sensitive and therefore cannot be made publicly available. Hence, the scripts are not able to run without firstly gaining access to the data. 
+
+## Structure
+The repository is structured as such: 
+```
+insert tree here 
+```
+
+## Pipeline
+Firstly, please install all necessary requirements by typing in the terminal: 
+```
+bash setup.sh 
+```
+To run any code, please remember to firstly activate your virtual environment by typing `source env/bin/activate` in your terminal while being in the main folder of the directory (`cd inner-speech-fMRI`).
