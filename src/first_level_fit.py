@@ -133,7 +133,8 @@ def main():
     
     # define root dir 
     path = pathlib.Path(__file__)
-    bids_path = path.parents[3] / "816119" / "InSpePosNegData" / "BIDS_2023E"
+    #bids_path = path.parents[3] / "816119" / "InSpePosNegData" / "BIDS_2023E"
+    bids_path = path.parents[1] / "data" / "InSpePosNegData" / "BIDS_2023E"
 
     save_path = path.parents[1] / "data" / "flm_models"
     save_path.mkdir(parents=True, exist_ok=True)
