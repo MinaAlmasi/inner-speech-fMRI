@@ -7,45 +7,25 @@ import pickle
 from nilearn import plotting
 import matplotlib.pyplot as plt
 from nilearn.glm import threshold_stats_img
+from utils import load_all_flms, load_masks
 
-def load_all_flms(flm_path:pathlib.Path): 
+
+def plot_contrasts(subject, flm, ax, contrast = "button_press"):
     '''
-    Load the first level models from a specified path.
+    Plot contrast for a given subject against "baseline" (see notebook 13)
 
     Args
-        flm_path: path to the first level models
-
-    Returns
-        fl_models: list of first level models (objects)
+        subject: subject id
+        flm: first level model
+        ax: axis to plot on
+        contrast: contrast to plot
     '''
 
-    # obtain all file paths
-    flm_files = [file for file in flm_path.iterdir() if file.name.endswith(".pkl")]
-
-    # initialize list for all models
-    all_flms = []
-
-    # iterate over file names
-    for file in flm_files:
-
-        # load flm
-        flm = pickle.load(open(file, 'rb'))
-
-        # append to list
-        all_flms.append(flm)
-    
-    return all_flms
-
-
-def load_masks(mask_path):
-    pass
-
-
-def plot_contrasts(flm, ax, contrast = "button_press"):
     # compute the contrast
     contrast = flm.compute_contrast(contrast, output_type = "z_score")
 
     # make bonferroni correction
+    
     contrast, threshold = threshold_stats_img(
             contrast, 
             alpha=0.05, 
@@ -57,14 +37,43 @@ def plot_contrasts(flm, ax, contrast = "button_press"):
         plot_abs=False, 
         cmap='RdBu',
         axes = ax)
+    
+    ax.set_title(f"Subject: {subject}")
+
+def plot_all_subjects_contrasts(flms, save_path):
+    
+    # set the canvas
+    fig, axes = plt.subplots(4,2,figsize=(10, 12))
+
+    # iterate over each subject in dictionary
+    for i, subject_id in enumerate(flms):
+        flm = flms[subject_id]
+        
+        # flatten axes
+        ax = axes.flatten()[i]
+
+        # plot contrasts
+        plot_contrasts(subject = subject_id, flm = flm, ax = ax, contrast = "button_press")
+
+    # save fig 
+    if save_path: 
+        plt.savefig(save_path)
+
 
 def main():
+    # define paths 
     path = pathlib.Path(__file__)
-    flm_path = path.parents[1] / "data" / "flm_models"
+    data_path = path.parents[1] / "data"
     
-    flms = load_all_flms(flm_path)
+    results_path = path.parents[1] / "results"
+    results_path.mkdir(parents=True, exist_ok=True)
+    
+    
+    flms = load_all_flms(data_path / "all_flms")
 
-    plot_contrasts(flms[0])
+    masks = load_masks(data_path / "mask_objects")
+
+    plot_all_subjects_contrasts(flms, save_path = results_path / "sanity_check.png")
 
 
 if __name__ == "__main__":
