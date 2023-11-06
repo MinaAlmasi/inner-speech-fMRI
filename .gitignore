@@ -160,5 +160,6 @@ cython_debug/
 #.idea/
 
 # data
-data/flm_models
-data/InSpePosNegData
+data/all_flms/*
+data/mask_objects/*
+data/InSpePosNegData/*
