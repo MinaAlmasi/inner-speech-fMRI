@@ -149,11 +149,7 @@ def get_confounds(confound_paths):
         confounds_df = pd.read_csv(path, sep="\t")
 
         # select confound cols we are interested in
-        confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
-
-        # replace all nans # NB to whether this is the correct solution (0s should not do a big impact https://neurostars.org/t/confounds-from-fmriprep-which-one-would-you-use-for-glm/326/18)
-        # for other solution, see maybe https://carpentries-incubator.github.io/SDC-BIDS-fMRI/05-data-cleaning-with-nilearn/index.html
-        confounds_df = confounds_df.fillna(0)
+        confounds_df = confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
 
         confounds.append(confounds_df)
 
