@@ -84,7 +84,7 @@ def add_buttonpress_events(events_dfs):
                 new_trial_type = "button_press"
 
                 # define new row
-                new_row = {"onset": new_onset, "duration": 0.5, "trial_type": "button_press", "RT": 0}
+                new_row = {"onset": new_onset, "duration": 0.2, "trial_type": "button_press", "RT": 0}
                 
                 # append new row to df
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -168,7 +168,7 @@ def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths, sav
     # create first lvl model 
     first_level_mdl = FirstLevelModel(
         t_r=TR,
-        slice_time_ref=0.5, # default val, ask Mikkel as notebook 13 has it set to 0.5 
+        slice_time_ref=0, # default val, ask Mikkel as notebook 13 has it set to 0.5 
         hrf_model="glover", 
         mask_img = mask_image, 
         noise_model="ar1", # We use the ar1 noise model as it assumes time-series data. See https://nilearn.github.io/dev/auto_examples/04_glm_first_level/plot_first_level_details.html

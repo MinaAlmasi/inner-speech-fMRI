@@ -25,7 +25,6 @@ def plot_contrasts(subject, flm, ax, contrast = "button_press"):
     contrast = flm.compute_contrast(contrast, output_type = "z_score")
 
     # make bonferroni correction
-    
     contrast, threshold = threshold_stats_img(
             contrast, 
             alpha=0.05, 
