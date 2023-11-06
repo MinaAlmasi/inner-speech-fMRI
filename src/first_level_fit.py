@@ -137,7 +137,7 @@ def get_masks(mask_paths, save_path = None):
     if save_path:
         file_path = save_path / "mask_objects"
         file_path.mkdir(parents=True, exist_ok=True)
-        pickle.dump(mask_image, open(file_path / f"{subject_name}.pkl", "wb"))
+        pickle.dump(mask_image, open(file_path / f"mask_{subject_name}.pkl", "wb"))
         
     return mask_image
 
@@ -166,7 +166,7 @@ def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths, sav
 
     # get events, confonds and mask img
     events = get_events(event_paths)
-    confounds = get_confounds(confounds_paths) 
+    confounds = get_confounds(confounds_paths)
     mask_image = get_masks(mask_paths, save_path = save_path)
 
     # create first lvl model 
