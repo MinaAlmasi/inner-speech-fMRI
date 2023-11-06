@@ -84,7 +84,7 @@ def add_buttonpress_events(events_dfs):
                 new_trial_type = "button_press"
 
                 # define new row
-                new_row = {"onset": new_onset, "duration": 0.1, "trial_type": "button_press", "RT": 0}
+                new_row = {"onset": new_onset, "duration": 0.5, "trial_type": "button_press", "RT": 0}
                 
                 # append new row to df
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -172,11 +172,12 @@ def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths, sav
     # create first lvl model 
     first_level_mdl = FirstLevelModel(
         t_r=TR,
-        slice_time_ref=0, # default val, ask Mikkel as notebook 13 has it set to 0.5 
+        slice_time_ref=0.5, # default val, ask Mikkel as notebook 13 has it set to 0.5 
         hrf_model="glover", 
         mask_img = mask_image, 
-        noise_model="ols", 
-        verbose=1
+        noise_model="ar1", # We use the ar1 noise model as it assumes time-series data. See https://nilearn.github.io/dev/auto_examples/04_glm_first_level/plot_first_level_details.html
+        verbose=1,
+        n_jobs=-2 # all cores except 1
     )
 
     # fit model 
@@ -200,11 +201,7 @@ def all_subjects_pipeline(bids_path, subjects_list, save_path=None):
             pickle.dump(first_level_mdl, open(file_path / file_name, "wb"))
 
 
-def main():
-    # set number of threads to 1 as it otherwise hogs memory to run first level models
-    os.environ['MKL_NUM_THREADS'] = '1'
-    os.environ['OPENBLAS_NUM_THREADS'] = '1'
-    
+def main():    
     # define root dir 
     path = pathlib.Path(__file__)
     bids_path = path.parents[1] / "data" / "InSpePosNegData" / "BIDS_2023E"
