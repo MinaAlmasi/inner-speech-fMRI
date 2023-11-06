@@ -1,4 +1,5 @@
 import pathlib
+import pickle
 
 def load_all_flms(flm_path:pathlib.Path): 
     '''
@@ -14,34 +15,42 @@ def load_all_flms(flm_path:pathlib.Path):
     # obtain all file paths
     flm_files = [file for file in flm_path.iterdir() if file.name.endswith(".pkl")]
 
+    # sort list of file paths
+    flm_files.sort()
+
     # initialize list for all models
-    all_flms = []
+    all_flms = {}
 
     # iterate over file names
     for file in flm_files:
+        # get subject id from name
+        subject_id = file.name.split("_")[1][:4]
 
         # load flm
         flm = pickle.load(open(file, 'rb'))
 
         # append to list
-        all_flms.append(flm)
+        all_flms[subject_id] = flm
     
     return all_flms
 
 
-def load_masks(masks_path):
+def load_masks(masks_object_path:pathlib.Path):
     '''
-    Load the masks from a specified path.
+    Load saved mask objects from a specified path.
 
     Args
-        masks_path: path to the masks
+        masks_object_path: path to the mask objects (pkl)
 
     Returns
         masks: list of masks (objects)
     '''
 
     # obtain all file paths
-    mask_files = [file for file in masks_path.iterdir() if file.name.endswith(".pkl")]
+    mask_files = [file for file in masks_object_path.iterdir() if file.name.endswith(".pkl")]
+
+    # sort 
+    mask_files.sort()
 
     # initialize list for all masks
     masks = {}
@@ -50,10 +59,10 @@ def load_masks(masks_path):
     for file in mask_files:
 
         # get subject id from name 
-        subject_id = file.name.split("_")[1]
+        subject_id = file.name.split("_")[1][:4]
 
         # load mask
-        mask = nib.load(file)
+        mask = pickle.load(open(file, 'rb'))
 
         # add to to dict
         masks[subject_id] = mask
