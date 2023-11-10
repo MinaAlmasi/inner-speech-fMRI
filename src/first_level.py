@@ -37,7 +37,7 @@ def get_paths(bids_path, subject:str, n_runs:int):
     # get fprep paths 
     fprep_f_paths = [fprep_fdir / f"sub-{subject}_task-boldinnerspeech_run-{run}_echo-1_space-{space}_desc-preproc_bold.nii.gz" for run in range(1, n_runs+1)]
 
-    # get event paths 
+    # get event paths
     event_paths = [path for path in raw_fdir.iterdir() if path.name.endswith("_events.tsv")]
 
     # get confounds paths
@@ -52,6 +52,37 @@ def get_paths(bids_path, subject:str, n_runs:int):
     
     return fprep_f_paths, event_paths, confounds_paths, mask_paths
 
+def update_events(events_dfs):
+    '''
+    Update events dataframes renaming trial types IMG_PS and IMG_PO to "positive" and IMG_NS and IMG_NO to "negative"
+
+    Args
+        events_dfs: list of dataframes containing events data
+
+    Returns 
+        modified_events_dfs: list of dataframes containing events data with new trial types
+    '''
+    modified_events_dfs = []
+
+    # iterate over runs
+    for df in events_dfs:
+        # iterate over events in each run
+        for i, row in df.iterrows():
+            # get trial type
+            trial_type = row["trial_type"]
+
+            # update trial type
+            if trial_type == "IMG_PS" or trial_type == "IMG_PO":
+                df.at[i, "trial_type"] = "positive_img"
+            elif trial_type == "IMG_NS" or trial_type == "IMG_NO":
+                df.at[i, "trial_type"] = "negative_img"
+            elif trial_type == "IMG_BI":
+                df.at[i, "trial_type"] = "button_img"
+
+        # append modified df to list
+        modified_events_dfs.append(df)
+
+    return modified_events_dfs
 
 def add_buttonpress_events(events_dfs):
     '''
@@ -84,7 +115,7 @@ def add_buttonpress_events(events_dfs):
                 new_trial_type = "button_press"
 
                 # define new row
-                new_row = {"onset": new_onset, "duration": 0.2, "trial_type": "button_press", "RT": 0}
+                new_row = {"onset": new_onset, "duration": 0.0, "trial_type": "button_press", "RT": 0}
                 
                 # append new row to df
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -117,6 +148,9 @@ def get_events(events_paths):
 
     # add the button press events (also removes RT)
     events = add_buttonpress_events(events)
+
+    # combine positive and negative events
+    events = update_events(events)
 
     return events 
 
@@ -168,7 +202,7 @@ def first_level_fit(fprep_f_paths, event_paths, confounds_paths, mask_paths, sav
     # create first lvl model 
     first_level_mdl = FirstLevelModel(
         t_r=TR,
-        slice_time_ref=0, # default val, ask Mikkel as notebook 13 has it set to 0.5 
+        slice_time_ref=0.5, # Ask Mikkel as notebook 13 has it set to 0.5. And it is mentioned as 0.5 in boilerplate
         hrf_model="glover", 
         mask_img = mask_image, 
         noise_model="ar1", # We use the ar1 noise model as it assumes time-series data. See https://nilearn.github.io/dev/auto_examples/04_glm_first_level/plot_first_level_details.html
