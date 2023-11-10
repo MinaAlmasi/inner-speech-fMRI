@@ -7,7 +7,7 @@ import pickle
 from nilearn import plotting
 import matplotlib.pyplot as plt
 from nilearn.glm import threshold_stats_img
-from utils import load_all_flms, load_masks
+from utils import load_all_flms
 
 
 def plot_contrasts(subject, flm, ax, contrast = "button_press"):
@@ -67,10 +67,7 @@ def main():
     results_path = path.parents[1] / "results"
     results_path.mkdir(parents=True, exist_ok=True)
     
-    
     flms = load_all_flms(data_path / "all_flms")
-
-    masks = load_masks(data_path / "mask_objects")
 
     plot_all_subjects_contrasts(flms, save_path = results_path / "sanity_check.png")
 
