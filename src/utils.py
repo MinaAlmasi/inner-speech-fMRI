@@ -1,18 +1,37 @@
 import pathlib
 import pickle
 
-def load_all_flms(flm_path:pathlib.Path): 
+def remove_flms(flms_dict, subject_ids=[]):
     '''
-    Load the first level models from a specified path.
+    Removes specified subjects (e.g. due to poor data) from the dictionary of first level models.  
+      
+    Args
+        flms_dict: dictionary of all first level models (output of load_all_flms)
+        subject_ids: list of subject ids to remove
+
+    Returns
+        flms_dict: dictionary of all first level models without the removed subjects
+      '''
+    
+    for subject_id in subject_ids:
+        if subject_id in flms_dict:
+            del flms_dict[subject_id]
+    
+    return flms_dict
+
+def load_all_flms(flm_path:pathlib.Path, exclude_subjects:list=[]): 
+    '''
+    Load the first level models from a specified path. Option to exclude subjects based on their ID.
 
     Args
         flm_path: path to the first level models
+        exclude_subjects: list of subject ids to exclude
 
     Returns
         fl_models: list of first level models (objects)
     '''
 
-    # obtain all file paths
+    # obtain all file paths (except for the excluded )
     flm_files = [file for file in flm_path.iterdir() if file.name.endswith(".pkl")]
 
     # sort list of file paths
@@ -32,6 +51,9 @@ def load_all_flms(flm_path:pathlib.Path):
         # append to list
         all_flms[subject_id] = flm
     
+    # remove the subjects should be excluded
+    all_flms = remove_flms(all_flms, subject_ids=exclude_subjects)
+
     return all_flms
 
 
