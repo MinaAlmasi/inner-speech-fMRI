@@ -1,0 +1,3 @@
+cluster_id,peak_x,peak_y,peak_z,peak_value,volume_mm,aal,desikan_killiany,harvard_oxford
+1.0,-28.297999382019043,-97.13599967956543,-1.0,3.599438190460205,303.0821228027344,Occipital_Mid_L,ctx-lh-lateraloccipital,67.0% Left_Occipital_Pole; 5.0% Left_Lateral_Occipital_Cortex_inferior_division
+2.0,-45.97999954223633,-66.82399940490723,49.0,3.3971011638641357,271.1787414550781,Angular_L,ctx-lh-inferiorparietal,60.0% Left_Lateral_Occipital_Cortex_superior_division
