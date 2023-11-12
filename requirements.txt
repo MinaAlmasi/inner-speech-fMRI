@@ -12,3 +12,4 @@ pyvistaqt
 ndslib
 bids
 imageio
+atlasreader
