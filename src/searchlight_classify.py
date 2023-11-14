@@ -7,11 +7,11 @@ from first_level import get_paths, get_events, get_confounds
 
 # import packages
 import pandas as pd
-import nibabel
+import nibabel as nib
 import nilearn
 import numpy as np
 import pathlib
-
+from nilearn.glm.first_level import make_first_level_design_matrix
 
 def fl_matrix(events:pd.DataFrame, confounds:pd.DataFrame, fprep_f_paths):
     '''
@@ -20,6 +20,7 @@ def fl_matrix(events:pd.DataFrame, confounds:pd.DataFrame, fprep_f_paths):
     Args:
         events: dataframe with events
         confounds: dataframe with confounds 
+        fprep_f_paths: list of paths to preprocessed functional data
     
     Returns: 
         design_matrix: first level matrix 
@@ -28,6 +29,8 @@ def fl_matrix(events:pd.DataFrame, confounds:pd.DataFrame, fprep_f_paths):
     # calculate frame times
     TR = int(nib.load(fprep_f_paths[0]).header["pixdim"][4]) # get TR from first functional fmri path (based on https://nipy.org/nibabel/devel/biaps/biap_0006.html)
     frame_times = np.linspace(0, TR*len(confounds), len(confounds), endpoint=False)
+    
+    
 
     # make design matrix
     design_matrix = make_first_level_design_matrix(
@@ -55,7 +58,7 @@ def fl_matrices(all_events:list, all_confounds:list, fprep_f_paths):
     matrices = []
 
     for event, confounds in zip(all_events, all_confounds):
-        dm = first_level_matrix(event, confounds, fprep_f_paths)
+        dm = fl_matrix(event, confounds, fprep_f_paths)
         matrices.append(dm)
 
     return matrices
@@ -72,8 +75,11 @@ def main():
     events = get_events(event_paths)
     confounds = get_confounds(confounds_paths)
 
+    # test if fl_matrix works
+    #test_matrix = fl_matrix(events[0], confounds[0], fprep_f_paths)
+    test_matrices = fl_matrices(events, confounds, fprep_f_paths)
+
     
-    print(confounds)
 
 if __name__ == "__main__":
     main()
