@@ -176,14 +176,14 @@ def get_masks(mask_paths, save_path = None):
     return mask_image
 
 
-def get_confounds(confound_paths):
+def get_confounds(confound_paths, cols:list=["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]):
     confounds = []
 
     for path in confound_paths:
         confounds_df = pd.read_csv(path, sep="\t")
 
         # select confound cols we are interested in
-        confounds_df = confounds_df.loc[:, ["trans_x", "trans_y", "trans_z", "rot_x", "rot_y", "rot_z"]]
+        confounds_df = confounds_df.loc[:, cols]
 
         confounds.append(confounds_df)
 
