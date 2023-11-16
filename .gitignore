@@ -163,3 +163,4 @@ cython_debug/
 data/all_flms/*
 data/mask_objects/*
 data/InSpePosNegData/*
+data/searchlight/*
