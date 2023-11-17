@@ -79,7 +79,7 @@ def reshape_classify(idx_cond1, idx_cond2, conditions_label, b_maps):
     return fmri_img_train, fmri_img_test, conditions_train, conditions_test
 
 
-def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path):
+def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path, filename):
     '''
     Run searchlight classification. Save to data path.
     '''
@@ -96,7 +96,7 @@ def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path):
     searchlight.fit(fmri_img_train, conditions_train)
     
     # save searchlight pickle
-    f = open(data_path / 'searchlight_pos_neg.pkl', 'wb')
+    f = open(data_path / filename, 'wb')
     pickle.dump([searchlight, searchlight.scores_], f)
     f.close()
 
@@ -123,15 +123,16 @@ def main():
     idx_neg, idx_pos, idx_but, idx_but_press, conditions_label = remake_labels(conditions_label)
     
     # reshape and split for classification on the conditions we are interested in 
-    fmri_img_train, fmri_img_test, conditions_train, conditions_test = reshape_classify(idx_neg, idx_pos, conditions_label, b_maps)
+    cond1, cond2 = idx_neg, idx_pos
+    fmri_img_train, fmri_img_test, conditions_train, conditions_test = reshape_classify(cond1, cond2, conditions_label, b_maps)
 
     # get mask paths, load masks
     masks = load_masks(mask_paths)
     subject_mask = masks[subject]
 
     # run searchlight 
-    searchlight = run_searchlight(subject_mask, fmri_img_train, conditions_train, data_path)
-    
+    filename = 'searchlight_neg_pos.pkl'
+    searchlight = run_searchlight(subject_mask, fmri_img_train, conditions_train, data_path, filename)
 
 
 if __name__ == "__main__":
