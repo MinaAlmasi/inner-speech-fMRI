@@ -1,7 +1,12 @@
 '''
 Searchlight classification
 '''
+import pathlib
+
 # import own functions
+import sys 
+sys.path.append(str(pathlib.Path(__file__).parents[2] / "src"))
+
 from utils import load_all_flms
 from first_level import get_paths, get_events, get_confounds
 
@@ -11,7 +16,6 @@ import nibabel as nib
 import pickle
 import nilearn
 import numpy as np
-import pathlib
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
 
@@ -101,7 +105,7 @@ def create_bmaps(events, trial_dms, models, data_path):
 def main():
     # define paths 
     path = pathlib.Path(__file__)
-    data_path = path.parents[1] / "data"
+    data_path = path.parents[2] / "data"
     bids_path = data_path / "InSpePosNegData" / "BIDS_2023E"
     fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, "0116", n_runs=6)
     

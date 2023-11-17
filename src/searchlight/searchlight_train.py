@@ -7,14 +7,14 @@ import pickle
 import numpy as np
 import pandas as pd
 
-from nilearn.image import new_img_like, load_img, index_img, clean_img, concat_imgs
-from sklearn.model_selection import train_test_split, GroupKFold
+from nilearn.image import index_img, concat_imgs
+from sklearn.model_selection import train_test_split
 
-from nilearn.plotting import plot_stat_map, plot_img, show
-from nilearn import decoding
 from nilearn.decoding import SearchLight
 from sklearn.naive_bayes import GaussianNB
 
+import sys 
+sys.path.append(str(pathlib.Path(__file__).parents[2] / "src"))
 from utils import load_masks
 
 def remake_labels(conditions_label): 
@@ -84,13 +84,15 @@ def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path):
     Run searchlight classification. Save to data path.
     '''
     # initialize searchlight
+    print("Intializing searchlight ...")
     searchlight = SearchLight(
     mask_img,
     estimator=GaussianNB(),
-    radius=5, n_jobs=-2,
-    verbose=10, cv=10)
+    radius=5, n_jobs=-1,
+    verbose=5, cv=3)
     
     # fit searchlight
+    print("Fitting searchlight ...")
     searchlight.fit(fmri_img_train, conditions_train)
     
     # save searchlight pickle
@@ -101,16 +103,13 @@ def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path):
     return searchlight
 
 
-def plot_searchlight():
-    pass
-
 def main(): 
     subject = "0116"
     
     # define paths 
     path = pathlib.Path(__file__)
-    data_path = path.parents[1] / "data" / "searchlight"
-    mask_paths = path.parents[1] / "data" / "mask_objects"
+    data_path = path.parents[2] / "data" / "searchlight"
+    mask_paths = path.parents[2] / "data" / "mask_objects"
 
     # load all flms, trial_dms for particular subject
     with open(data_path / "all_flms.pkl", 'rb') as f:
