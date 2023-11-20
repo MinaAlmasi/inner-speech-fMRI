@@ -1,6 +1,7 @@
 '''
-Searchlight classification
+Preparation for searchlight classification
 '''
+
 import pathlib
 
 # import own functions
