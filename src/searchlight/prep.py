@@ -78,10 +78,10 @@ def create_bmaps(events, trial_dms, models, data_path):
 
     for idx, event_df in enumerate(events):
         N=event_df.shape[0]
-        #Make an identity matrix with N= number of trials
+        # make an identity matrix with N= number of trials
         contrasts=np.eye(N)
 
-        #Find difference between columns in design matrix and number of trials
+        # g ind difference between columns in design matrix and number of trials
         dif=trial_dms[idx].shape[1]-contrasts.shape[1]
         
         #Pad with zeros
@@ -97,11 +97,11 @@ def create_bmaps(events, trial_dms, models, data_path):
             # Make a variable with condition labels for use in later classification
             conditions_label.append(trial_dms[idx].columns[i])
 
-        f = open(data_path / "searchlight" / "bmaps_conditions.pkl", "wb")
-        pickle.dump([b_maps, conditions_label], f)
-        f.close()
+    f = open(data_path / "searchlight" / "bmaps_conditions.pkl", "wb")
+    pickle.dump([b_maps, conditions_label], f)
+    f.close()
 
-        return b_maps, conditions_label
+    return b_maps, conditions_label
 
 def main():
     # define paths 
