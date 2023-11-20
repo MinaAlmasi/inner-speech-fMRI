@@ -30,23 +30,6 @@ def plot_searchlight_outcome(anat_filename, searchlight_scores, results_path):
     surface_plot.savefig(results_path / "searchlight_surface_plot.png")
     deep_plot.savefig(results_path / "searchlight_deep_plot.png")
 
-def find_most_important_voxels(searchlight_scores, mask_img, n_voxels=500):
-    # find the percentile that makes the cutoff for x best voxels
-    perc=100*(1-n_voxels/searchlight_scores.size)
-    
-    # find the cutoff
-    cut=np.percentile(searchlight_scores, perc)
-
-    # make copy of mask
-    process_mask = mask_img.get_fdata().astype(int)
-
-    # set all voxels below the cutoff to 0
-    process_mask[searchlight_scores<cut]=0
-
-    process_mask_img = new_img_like(mask_img, process_mask)
-
-    return process_mask_img, cut
-
 def plot_most_important_voxels(anat_filename, searchlight_scores, results_path, n_voxels=500):
     # find the percentile that makes the cutoff for x best voxels
     perc=100*(1-n_voxels/searchlight_scores.size)
@@ -56,13 +39,6 @@ def plot_most_important_voxels(anat_filename, searchlight_scores, results_path, 
 
     # create an image of the searchlight scores
     searchlight_img = new_img_like(anat_filename, searchlight_scores)
-
-    # plot the searchlight scores
-    '''
-    plot = plot_img(searchlight_img, bg_img=anat_filename,
-         title="Searchlight", display_mode="z",cut_coords=[-25,-20,-15,-10,-5,0,5],
-         vmin=.40, cmap='jet', threshold=cut, black_bg=True)
-    '''
 
     plot=plotting.plot_glass_brain(searchlight_img,threshold=cut)
 
