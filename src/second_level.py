@@ -1,5 +1,5 @@
 '''
-Script to perform GLM analysis on the data
+Script to perform GLM analysis on the data (including plotting)
 '''
 import pathlib
 from nilearn.glm.second_level import SecondLevelModel
@@ -37,13 +37,13 @@ def plot_wholebrain_contrasts(second_level_mdl, contrast = "positive_img - negat
     threshold = norm.isf(pval)
     
     # compute contrassts
-    zmap_g = second_level_mdl.compute_contrast(first_level_contrast = contrast, output_type='z_score')
+    zmap_g = second_level_mdl.compute_contrast(first_level_contrast = contrast, output_type="z_score")
 
     # plot contrast
-    surface_plot = plotting.plot_glass_brain(zmap_g, cmap='blue_red',colorbar=True, threshold=threshold,
+    surface_plot = plotting.plot_glass_brain(zmap_g, cmap="roy_big_bl", colorbar=True, threshold=threshold,
                           plot_abs=False)
                           
-    deep_plot = plot_stat_map(zmap_g, cmap='cold_hot',threshold=threshold, cut_coords=[-30,-20,-10,0,10,20,30],
+    deep_plot = plot_stat_map(zmap_g, cmap="roy_big_bl",threshold=threshold, cut_coords=[-30,-20,-10,0,10,20,30],
               display_mode='z',  black_bg=False)
     
     if save_path is not None:
