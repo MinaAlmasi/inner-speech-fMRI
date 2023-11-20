@@ -41,7 +41,7 @@ def remake_labels(conditions_label):
     return idx_neg, idx_pos, idx_but, idx_but_press, conditions_label
 
 
-def reshape_classify(idx_cond1, idx_cond2, conditions_label, b_maps):
+def reshape_classify(idx_cond1, idx_cond2, conditions_label, b_maps, data_path, filename):
     '''
     Reshape for classification. Select two conditions of interest by inserting their indicies.
 
@@ -50,6 +50,8 @@ def reshape_classify(idx_cond1, idx_cond2, conditions_label, b_maps):
         idx_cond2: indicies of condition 2 
         conditions_label: labels of conditions 
         b_maps: beta maps 
+        data_path: where the returned arguments should be saved
+        filename: name of the file of the returned arguments to be saved 
     '''
     # concatenate bmaps
     b_maps_conc=concat_imgs(b_maps)
@@ -67,11 +69,20 @@ def reshape_classify(idx_cond1, idx_cond2, conditions_label, b_maps):
     idx2 = np.arange(conditions.shape[0])
 
     # create training and testing vars on the basis of class labels (is this the correct split?? Notebook says this)
-    idx_train, idx_test, conditions_train, conditions_test = train_test_split(idx2, conditions, test_size=0.2)
+    idx_train, idx_test, conditions_train, conditions_test = train_test_split(
+        idx2, 
+        conditions, 
+        test_size=0.2, 
+        random_state=2502
+        )
     
     # reshape data
     fmri_img_train = index_img(b_maps_img, idx_train)
     fmri_img_test = index_img(b_maps_img, idx_test)
+
+    f = open(data_path / filename, 'wb')
+    pickle.dump([fmri_img_train, fmri_img_test, conditions_train, conditions_test], f)
+    f.close()
 
     return fmri_img_train, fmri_img_test, conditions_train, conditions_test
 
@@ -102,6 +113,7 @@ def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path, filen
 
 def main(): 
     subject = "0116"
+    np.random.seed(2502)
     
     # define paths 
     path = pathlib.Path(__file__)
@@ -121,15 +133,16 @@ def main():
     
     # reshape and split for classification on the conditions we are interested in 
     cond1, cond2 = idx_pos, idx_neg
-    fmri_img_train, fmri_img_test, conditions_train, conditions_test = reshape_classify(cond1, cond2, conditions_label, b_maps)
+    filename_RESHAPE = "searchlight_reshaped_data.pkl"
+    fmri_img_train, fmri_img_test, conditions_train, conditions_test = reshape_classify(cond1, cond2, conditions_label, b_maps, data_path, filename_RESHAPE)
 
     # get mask paths, load masks
     mask_path = bids_path / pathlib.Path(f'derivatives/sub-{subject}/anat/sub-{subject}_acq-T1sequence_run-1_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz')
     subject_mask = load_img(mask_path)
 
     # run searchlight 
-    filename = 'searchlight_pos_neg.pkl'
-    searchlight = run_searchlight(subject_mask, fmri_img_train, conditions_train, data_path, filename)
+    filename_SL = 'searchlight_pos_neg.pkl'
+    searchlight = run_searchlight(subject_mask, fmri_img_train, conditions_train, data_path, filename_SL)
 
 
 if __name__ == "__main__":
