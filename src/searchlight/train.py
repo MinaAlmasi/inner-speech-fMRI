@@ -8,14 +8,11 @@ import numpy as np
 import pandas as pd
 
 from nilearn.image import index_img, concat_imgs
+from nilearn.image import new_img_like, load_img
 from sklearn.model_selection import train_test_split
 
 from nilearn.decoding import SearchLight
 from sklearn.naive_bayes import GaussianNB
-
-import sys 
-sys.path.append(str(pathlib.Path(__file__).parents[2] / "src"))
-from utils import load_masks
 
 def remake_labels(conditions_label): 
     '''
@@ -109,7 +106,7 @@ def main():
     # define paths 
     path = pathlib.Path(__file__)
     data_path = path.parents[2] / "data" / "searchlight"
-    mask_paths = path.parents[2] / "data" / "mask_objects"
+    bids_path = path.parents[2] / "data" / "InSpePosNegData" / "BIDS_2023E"
 
     # load all flms, trial_dms for particular subject
     with open(data_path / "all_flms.pkl", 'rb') as f:
@@ -123,15 +120,15 @@ def main():
     idx_neg, idx_pos, idx_but, idx_but_press, conditions_label = remake_labels(conditions_label)
     
     # reshape and split for classification on the conditions we are interested in 
-    cond1, cond2 = idx_neg, idx_pos
+    cond1, cond2 = idx_pos, idx_neg
     fmri_img_train, fmri_img_test, conditions_train, conditions_test = reshape_classify(cond1, cond2, conditions_label, b_maps)
 
     # get mask paths, load masks
-    masks = load_masks(mask_paths)
-    subject_mask = masks[subject]
+    mask_path = bids_path / pathlib.Path(f'derivatives/sub-{subject}/anat/sub-{subject}_acq-T1sequence_run-1_space-MNI152NLin2009cAsym_desc-brain_mask.nii.gz')
+    subject_mask = load_img(mask_path)
 
     # run searchlight 
-    filename = 'searchlight_neg_pos.pkl'
+    filename = 'searchlight_pos_neg.pkl'
     searchlight = run_searchlight(subject_mask, fmri_img_train, conditions_train, data_path, filename)
 
 
