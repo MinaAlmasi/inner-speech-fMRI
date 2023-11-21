@@ -112,7 +112,7 @@ def run_searchlight(mask_img, fmri_img_train, conditions_train, data_path, filen
 
 
 def main(): 
-    subject = "0116"
+    subject = "0117"
     np.random.seed(2502)
     
     # define paths 

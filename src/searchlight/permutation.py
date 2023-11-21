@@ -83,7 +83,7 @@ def do_permutation(process_mask_img, fmri_img_test, conditions_test, data_path):
 
 
 def main(): 
-    subject = "0116"
+    subject = "0117"
 
     # define paths 
     path = pathlib.Path(__file__)

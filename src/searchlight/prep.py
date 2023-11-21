@@ -104,11 +104,13 @@ def create_bmaps(events, trial_dms, models, data_path):
     return b_maps, conditions_label
 
 def main():
+    subject = "0117"
+
     # define paths 
     path = pathlib.Path(__file__)
     data_path = path.parents[2] / "data"
     bids_path = data_path / "InSpePosNegData" / "BIDS_2023E"
-    fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, "0116", n_runs=6)
+    fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, subject, n_runs=6)
     
     # load flms, events and confounds
     flms = load_all_flms(data_path / "all_flms")

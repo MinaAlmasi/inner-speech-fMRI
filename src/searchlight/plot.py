@@ -46,7 +46,7 @@ def plot_most_important_voxels(anat_filename, searchlight_scores, results_path, 
     plot.savefig(results_path / "searchlight_topvoxels.png")
 
 def main():
-    subject = "0116"
+    subject = "0117"
 
     # define paths 
     path = pathlib.Path(__file__)
