@@ -103,10 +103,11 @@ def plot_button_press_counts(counts_df, highlight_subjects, save_path=None):
         ax = axes[i]
         # Color condition
         color = ['#808080' if col in highlight_subjects else '#D3D3D3' for col in counts_df.columns]
-        counts_df[column].plot(kind='bar', ax=ax, color=color[i])
+        counts_df[column].plot(kind='bar', ax=ax, color=color[i], rot=0)
         ax.set_title(column)
         ax.set_ylabel('Counts')
         ax.legend().set_visible(False)
+        
 
     plt.tight_layout()
 
@@ -148,7 +149,7 @@ def main():
     plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = "button_press_sanity_check.png")
 
 if __name__ == "__main__":
-    main()
+    test()
 
 
 
