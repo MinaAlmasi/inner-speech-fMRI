@@ -90,18 +90,25 @@ def get_button_press_per_run(bids_path, subjects_list,):
 
     return counts_df
 
-def plot_button_press_counts(counts_df, save_path=None):
+def plot_button_press_counts(counts_df, highlight_subjects, save_path=None):
     '''
     Plotting button press counts from a counts df using pandas 
     '''
-    # set canvas
-    plot = counts_df.plot(
-        subplots=True, 
-        layout=(4,2), 
-        kind = "bar", 
-        figsize=(10,12),
-        legend=False
-        )
+    # create subplots
+    fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(10, 12))
+    axes = axes.flatten()
+
+    # set the plots
+    for i, column in enumerate(counts_df.columns):
+        ax = axes[i]
+        # Color condition
+        color = ['#808080' if col in highlight_subjects else '#D3D3D3' for col in counts_df.columns]
+        counts_df[column].plot(kind='bar', ax=ax, color=color[i])
+        ax.set_title(column)
+        ax.set_ylabel('Counts')
+        ax.legend().set_visible(False)
+
+    plt.tight_layout()
 
     # save fig
     if save_path:
@@ -119,7 +126,7 @@ def test():
     subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
     counts = get_button_press_per_run(bids_path, subjects)
 
-    plot_button_press_counts(counts, "button_press_sanity_check.png")
+    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = "button_press_sanity_check.png")
 
 def main():
     # define paths 
@@ -138,7 +145,7 @@ def main():
     subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
     
     counts = get_button_press_per_run(bids_path, subjects)
-    plot_button_press_counts(counts, save_path = results_path / "button_press_sanity_check.png")
+    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = "button_press_sanity_check.png")
 
 if __name__ == "__main__":
     main()
