@@ -7,8 +7,11 @@ import pickle
 from nilearn import plotting
 import matplotlib.pyplot as plt
 from nilearn.glm import threshold_stats_img
-from utils import load_all_flms
+import pandas as pd
 
+# custom packages
+from utils import load_all_flms
+from first_level import get_paths, get_events
 
 def plot_contrasts(subject, flm, ax, contrast = "button_press"):
     '''
@@ -58,6 +61,65 @@ def plot_all_subjects_contrasts(flms, save_path):
     if save_path: 
         plt.savefig(save_path)
 
+def get_button_press_per_run(bids_path, subjects_list,):
+    subject_counts = {}
+
+    for subject in subjects_list: 
+        # get paths
+        fprep_f_paths, event_paths, confounds_paths, mask_paths = get_paths(bids_path, subject, n_runs=6)
+
+        # get events df 
+        events = get_events(event_paths, drop_RT=False)
+
+        # get number of button presses
+        BP_per_run = {}
+
+        for i, event_df in enumerate(events): # solution from https://www.tutorialspoint.com/how-to-count-occurrences-of-specific-value-in-pandas-column#:~:text=Using%20value_counts()%20method,unique%20value%20in%20the%20column.
+            # start by filtering out events where the RT is 0 
+            event_df = event_df.loc[event_df['RT'] > 0] 
+            
+            # get counts of button img (now only in trials where RT is more than 0, i.e. a button press is recorded)
+            counts = event_df["trial_type"].value_counts()["button_img"]
+
+            # add to BP per run
+            BP_per_run[i+1] = counts
+        
+        subject_counts[subject] = BP_per_run
+
+    counts_df = pd.DataFrame.from_dict(subject_counts)
+
+    return counts_df
+
+def plot_button_press_counts(counts_df, save_path=None):
+    '''
+    Plotting button press counts from a counts df using pandas 
+    '''
+    # set canvas
+    plot = counts_df.plot(
+        subplots=True, 
+        layout=(4,2), 
+        kind = "bar", 
+        figsize=(10,12),
+        legend=False
+        )
+
+    # save fig
+    if save_path:
+        print("Saving plot ..")
+        plt.savefig(save_path)
+
+def test(): 
+    # define root dir 
+    path = pathlib.Path(__file__)
+    bids_path = path.parents[1] / "data" / "InSpePosNegData" / "BIDS_2023E"
+
+    save_path = path.parents[1] / "data"
+    save_path.mkdir(parents=True, exist_ok=True)
+    
+    subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
+    counts = get_button_press_per_run(bids_path, subjects)
+
+    plot_button_press_counts(counts, "button_press_sanity_check.png")
 
 def main():
     # define paths 
@@ -67,10 +129,16 @@ def main():
     results_path = path.parents[1] / "results"
     results_path.mkdir(parents=True, exist_ok=True)
     
+    # plot contrasts
     flms = load_all_flms(data_path / "all_flms")
+    plot_all_subjects_contrasts(flms, save_path = results_path / "contrast_sanity_check.png")
 
-    plot_all_subjects_contrasts(flms, save_path = results_path / "sanity_check.png")
-
+    # plot button press
+    bids_path = path.parents[1] / "data" / "InSpePosNegData" / "BIDS_2023E"
+    subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
+    
+    counts = get_button_press_per_run(bids_path, subjects)
+    plot_button_press_counts(counts, save_path = results_path / "button_press_sanity_check.png")
 
 if __name__ == "__main__":
     main()
