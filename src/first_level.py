@@ -84,7 +84,7 @@ def update_events(events_dfs):
 
     return modified_events_dfs
 
-def add_buttonpress_events(events_dfs):
+def add_buttonpress_events(events_dfs, drop_RT=True):
     '''
     Add button press events to events dataframe. 
     This is done by adding a new row to the dataframe with the onset + RT of the trial and a trial type of "button_press".
@@ -124,7 +124,8 @@ def add_buttonpress_events(events_dfs):
         df = df.sort_values(by="onset").reset_index(drop=True)
 
         # drop RT col
-        df = df.drop(columns=["RT"])
+        if drop_RT == True:
+            df = df.drop(columns=["RT"])
 
         # append modified df to list
         modified_events_dfs.append(df)
@@ -132,7 +133,7 @@ def add_buttonpress_events(events_dfs):
     return modified_events_dfs
 
 
-def get_events(events_paths): 
+def get_events(events_paths, drop_RT=True): 
     events = []
 
     # read in events 
@@ -147,7 +148,7 @@ def get_events(events_paths):
         events.append(event_df)
 
     # add the button press events (also removes RT)
-    events = add_buttonpress_events(events)
+    events = add_buttonpress_events(events, drop_RT)
 
     # combine positive and negative events
     events = update_events(events)
