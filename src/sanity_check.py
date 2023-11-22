@@ -40,7 +40,7 @@ def plot_contrasts(subject, flm, ax, contrast = "button_press"):
         cmap='RdBu',
         axes = ax)
     
-    ax.set_title(f"Subject: {subject}")
+    ax.set_title(f"Participant: {subject}")
 
 def plot_all_subjects_contrasts(flms, save_path):
     
@@ -104,10 +104,10 @@ def plot_button_press_counts(counts_df, highlight_subjects, save_path=None):
         # Color condition
         color = ['#808080' if col in highlight_subjects else '#D3D3D3' for col in counts_df.columns]
         counts_df[column].plot(kind='bar', ax=ax, color=color[i], rot=0)
-        ax.set_title(column)
-        ax.set_ylabel('Counts')
+        ax.set_title(f"Participant: {column}")
+        ax.set_ylabel('Button Press Counts')
+        ax.set_xlabel('Run')
         ax.legend().set_visible(False)
-        
 
     plt.tight_layout()
 
@@ -121,13 +121,14 @@ def test():
     path = pathlib.Path(__file__)
     bids_path = path.parents[1] / "data" / "InSpePosNegData" / "BIDS_2023E"
 
-    save_path = path.parents[1] / "data"
+    save_path = path.parents[1] / "results"
     save_path.mkdir(parents=True, exist_ok=True)
     
     subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
     counts = get_button_press_per_run(bids_path, subjects)
+    print(counts)
 
-    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = "button_press_sanity_check.png")
+    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = save_path / "button_press_sanity_check.png")
 
 def main():
     # define paths 
@@ -146,10 +147,10 @@ def main():
     subjects = ["0116", "0117", "0118", "0119", "0120", "0121", "0122", "0123"]
     
     counts = get_button_press_per_run(bids_path, subjects)
-    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = "button_press_sanity_check.png")
+    plot_button_press_counts(counts, highlight_subjects = ["0119"], save_path = results_path / "button_press_sanity_check.png")
 
 if __name__ == "__main__":
-    test()
+    main()
 
 
 
