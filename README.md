@@ -1,7 +1,7 @@
 # Inner Speech fMRI 
 Investigating inner speech using fMRI. Portfolio 4 by Mina and Anton in the course  *Advanced Cognitive Neuroscience* (E2023). 
 
-Below, an overview of the repository is described. For reproducibility, please refer to the *Pipeline* section. Note that the data is highly sensitive and therefore cannot be made publicly available. Hence, the scripts are not able to run without firstly gaining access to the data. 
+Below, an overview of the repository is described. Please refer to the *Setup* section for instructions on how to install the necessary packages. Note that the data is highly sensitive and therefore cannot be made publicly available. Hence, the scripts are not able to run without firstly gaining access to the data. 
 
 ## Structure
 The repository is structured as such: 
@@ -13,10 +13,7 @@ The repository is structured as such:
 ├── results
 │   ├── atlas_reader
 │   │   ├── atlasreader.png
-│   │   ├── atlasreader_cluster01.png
-│   │   ├── atlasreader_cluster02.png
-│   │   ├── atlasreader_clusters.csv
-│   │   └── atlasreader_peaks.csv
+│   │   ├── ...
 │   ├── button_press_sanity_check.png
 │   ├── contrast_sanity_check.png
 │   ├── deep_plot.png
@@ -26,7 +23,6 @@ The repository is structured as such:
 │   └── surface_plot.png
 ├── setup.sh
 └── src
-    ├── __init__.py
     ├── first_level.py
     ├── sanity_check.py
     ├── searchlight
@@ -38,9 +34,25 @@ The repository is structured as such:
     └── utils.py
 ```
 
-## Pipeline
-Firstly, please install all necessary requirements by typing in the terminal: 
+An overview of the scripts within the `src` folder is given below: 
+| Script                        | Description                                                                                      |
+|-------------------------------|--------------------------------------------------------------------------------------------------|
+| `first_level.py`              | Creates first-level models for all subjects. Also contains functions for loading files from BIDS (in the old data format) and getting them in the right format. |
+| `sanity_check.py`             | Conducts the button press sanity check. Outputs both the plot for contrast and that for button press counts. |
+| `searchlight/permutation.py`  | Performs permutation testing on the 500 most informative voxels.                                   |
+| `searchlight/plot.py`         | Plots the searchlight results (surface plot & 500 most informative voxels).                        |
+| `searchlight/prep.py`         | Prepares data for searchlight classification (creating first-level matrices, bmaps, conditions_label). |
+| `searchlight/train.py`        | Remakes labels, reshapes data for classification, runs searchlight classification.                |
+| `second_level.py`             | Creates second-level models based on first-level models from `first_level.py`. Plots whole brain contrasts and finds relevant clusters using atlas. |
+| `utils.py`                    | Support functions for loading flms, removing specific subjects, and loading masks.                |
+
+
+## Setup
+Before being able to run the code, please install all necessary requirements by typing in the terminal: 
 ```
 bash setup.sh 
 ```
 To run any code, please remember to firstly activate your virtual environment by typing `source env/bin/activate` in your terminal while being in the main folder of the directory (`cd inner-speech-fMRI`).
+
+## Authors
+This code repository was a joint effort by Anton Drasbæk Sciønning ([@drasbaek](https://github.com/drasbaek)) and Mina Almasi ([@MinaAlmasi](https://github.com/MinaAlmasi)). 
