@@ -6,7 +6,36 @@ Below, an overview of the repository is described. For reproducibility, please r
 ## Structure
 The repository is structured as such: 
 ```
-insert tree here 
+├── LICENSE
+├── README.md
+├── data
+├── requirements.txt
+├── results
+│   ├── atlas_reader
+│   │   ├── atlasreader.png
+│   │   ├── atlasreader_cluster01.png
+│   │   ├── atlasreader_cluster02.png
+│   │   ├── atlasreader_clusters.csv
+│   │   └── atlasreader_peaks.csv
+│   ├── button_press_sanity_check.png
+│   ├── contrast_sanity_check.png
+│   ├── deep_plot.png
+│   ├── searchlight_deep_plot.png
+│   ├── searchlight_surface_plot.png
+│   ├── searchlight_topvoxels.png
+│   └── surface_plot.png
+├── setup.sh
+└── src
+    ├── __init__.py
+    ├── first_level.py
+    ├── sanity_check.py
+    ├── searchlight
+    │   ├── permutation.py
+    │   ├── plot.py
+    │   ├── prep.py
+    │   └── train.py
+    ├── second_level.py
+    └── utils.py
 ```
 
 ## Pipeline
