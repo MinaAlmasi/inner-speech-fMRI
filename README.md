@@ -1,7 +1,7 @@
 # Inner Speech fMRI 
 Investigating inner speech using fMRI. Portfolio 4 by Mina and Anton in the course  *Advanced Cognitive Neuroscience* (E2023). 
 
-Below, an overview of the repository is described. Please refer to the *Setup* section for instructions on how to install the necessary packages. Note that the data is highly sensitive and therefore cannot be made publicly available. Hence, the scripts are not able to run without firstly gaining access to the data. 
+Below, an overview of the repository is described. Please refer to the *Data Setup* and *Setup* section for instructions on how to install the necessary packages. Note that the data is highly sensitive and therefore cannot be made publicly available. Hence, the scripts are not able to run without firstly gaining access to the data. 
 
 ## Structure
 The repository is structured as such: 
@@ -46,6 +46,8 @@ An overview of the scripts within the `src` folder is given below:
 | `second_level.py`             | Creates second-level models based on first-level models from `first_level.py`. Plots whole brain contrasts and finds relevant clusters using atlas. |
 | `utils.py`                    | Support functions for loading flms, removing specific subjects, and loading masks.                |
 
+## Data Setup
+Please note that you need to copy the `InSpePosNegData_copy` folder (i.e., the old BIDS file structure) to the `data` folder and rename it to `InSpePosNegData` for the code to run. Only do so on UCLOUD as the data is sensitive. 
 
 ## Setup
 Before being able to run the code, please install all necessary requirements by typing in the terminal: 
